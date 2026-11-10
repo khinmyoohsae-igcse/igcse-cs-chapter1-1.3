@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 1.3 Data Storage & Compression MCQ App</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+            --warning: #d97706;
+            --accent: #f59e0b;
+        }
+
+        .dark-theme {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --success: #22c55e;
+            --success-bg: #064e3b;
+            --danger: #ef4444;
+            --danger-bg: #7f1d1d;
+            --warning: #f59e0b;
+            --accent: #fbbf24;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        button, select {
+            padding: 0.5rem 0.85rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover, select:hover {
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        main {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-box .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .tag {
+            background-color: var(--border-color);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .option-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        .option-prefix {
+            font-weight: 700;
+            margin-right: 0.75rem;
+            min-width: 24px;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.08);
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: var(--success-bg);
+            color: var(--text-color);
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--danger);
+            background-color: var(--danger-bg);
+            color: var(--text-color);
+        }
+
+        .explanation {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background-color: var(--bg-color);
+            border-left: 4px solid var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.45;
+            display: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .grid-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .grid-nav-btn {
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+
+        .grid-nav-btn.answered {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .grid-nav-btn.bookmarked {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <h1>IGCSE Computer Science</h1>
+            <p>1.3 Data Storage & Compression Quiz (50 MCQs)</p>
+        </div>
+        <div class="controls">
+            <button id="themeToggle">🌓 Theme</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- SETUP / DASHBOARD SCREEN -->
+        <div id="setupScreen" class="card">
+            <h2 style="margin-bottom: 1rem;">Quiz Configuration</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.4rem;">Mode</label>
+                    <select id="modeSelect" style="width: 100%;">
+                        <option value="practice">Practice Mode (Instant Feedback & Explanations)</option>
+                        <option value="exam">Exam Mode (Timed, Results at End)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.4rem;">Topic Filter</label>
+                    <select id="topicSelect" style="width: 100%;">
+                        <option value="all">All Topics (50 Questions)</option>
+                        <option value="units">1.3.1 Measurement Units & IEC System</option>
+                        <option value="calc">1.3.2 File Size Calculations (Sound/Image/CD)</option>
+                        <option value="reasons">1.3.3 Data Compression Rationale & Bandwidth</option>
+                        <option value="methods">1.3.4 Lossy & Lossless (JPEG, MP3/MP4, RLE)</option>
+                    </select>
+                </div>
+
+                <div class="toggle-container">
+                    <input type="checkbox" id="shuffleAnswersToggle" checked>
+                    <label for="shuffleAnswersToggle">Shuffle Answer Choices Automatically</label>
+                </div>
+            </div>
+
+            <button id="startBtn" class="btn-primary" style="width: 100%; padding: 0.75rem;">Start Quiz</button>
+        </div>
+
+        <!-- QUIZ INTERFACE SCREEN -->
+        <div id="quizScreen" class="hidden">
+            <div class="dashboard-grid">
+                <div class="stat-box">
+                    <div class="number" id="qCurrent">1 / 50</div>
+                    <div class="label">Progress</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="scoreDisplay">0</div>
+                    <div class="label">Current Score</div>
+                </div>
+                <div class="stat-box" id="timerBox">
+                    <div class="number" id="timerDisplay">--:--</div>
+                    <div class="label">Time Remaining</div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="card">
+                <div class="meta-info">
+                    <span class="tag" id="questionCategory">Topic</span>
+                    <button id="bookmarkBtn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">🔖 Bookmark</button>
+                </div>
+
+                <div class="question-text" id="questionText">Question text goes here?</div>
+
+                <div class="options-list" id="optionsContainer">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <div class="explanation" id="explanationBox">
+                    <strong>Explanation:</strong>
+                    <p id="explanationText"></p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button id="prevBtn">Previous</button>
+                    <button id="nextBtn" class="btn-primary">Next</button>
+                    <button id="submitBtn" class="btn-primary hidden" style="background-color: var(--success);">Submit Exam</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Question Navigator</h3>
+                <div class="grid-nav" id="gridNav"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="resultScreen" class="card hidden" style="text-align: center;">
+            <h2>Quiz Completed!</h2>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--primary); margin: 1rem 0;" id="finalScore">0 / 50</div>
+            <p id="percentageDisplay" style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 1.5rem;">0% Accuracy</p>
+            
+            <button id="restartBtn" class="btn-primary" style="padding: 0.75rem 1.5rem;">Return to Setup</button>
+        </div>
+    </main>
+
+    <script>
+        const questionsData = [
+            {
+                id: 1,
+                category: "units",
+                topic: "Basic Units",
+                question: "What is the smallest unit of memory in a computer, consisting of 8 bits?",
+                options: [
+                    "Byte",
+                    "Nibble",
+                    "Bit",
+                    "Word"
+                ],
+                correct: 0,
+                explanation: "A bit is the basic unit (0 or 1), a nibble is 4 bits, and a byte (8 bits) is the smallest addressable unit of memory in a computer."
+            },
+            {
+                id: 2,
+                category: "units",
+                topic: "Basic Units",
+                question: "What is a 4-bit binary number called?",
+                options: [
+                    "Nibble",
+                    "Byte",
+                    "Character",
+                    "Block"
+                ],
+                correct: 0,
+                explanation: "A 4-bit number is called a nibble, which is half of a byte."
+            },
+            {
+                id: 3,
+                category: "units",
+                topic: "IEC System Rationale",
+                question: "Why should internal computer memories (such as RAM and ROM) be measured using the IEC binary prefix system (e.g., KiB, MiB, GiB) rather than denary powers of 10?",
+                options: [
+                    "Internal memory is organized in powers of 2 (2^10, 2^20, 2^30), making IEC binary prefixes exact and more accurate",
+                    "The IEC system was invented to make memory sound larger for marketing purposes",
+                    "Denary systems cannot represent numbers larger than 1 Gigabyte",
+                    "RAM and ROM use 10-bit bytes instead of 8-bit bytes"
+                ],
+                correct: 0,
+                explanation: "RAM/ROM addressing uses powers of 2 (2^10 = 1024). The IEC system accurately reflects these binary multipliers."
+            },
+            {
+                id: 4,
+                category: "units",
+                topic: "IEC Memory Calculation",
+                question: "How many total bytes of data can be stored in a 64 GiB RAM module?",
+                options: [
+                    "68,719,476,736 bytes (64 × 2^30)",
+                    "64,000,000,000 bytes (64 × 10^9)",
+                    "67,108,864 bytes (64 × 2^20)",
+                    "549,755,813,888 bytes (64 × 2^33)"
+                ],
+                correct: 0,
+                explanation: "1 GiB = 2^30 bytes = 1,073,741,824 bytes. Thus, 64 GiB = 64 × 1,073,741,824 = 68,719,476,736 bytes."
+            },
+            {
+                id: 5,
+                category: "units",
+                topic: "IEC Multipliers",
+                question: "Which binary multiplier corresponds to 1 Mebibyte (1 MiB)?",
+                options: [
+                    "2^20 bytes (1,048,576 bytes)",
+                    "10^6 bytes (1,000,000 bytes)",
+                    "2^10 bytes (1,024 bytes)",
+                    "2^30 bytes (1,073,741,824 bytes)"
+                ],
+                correct: 0,
+                explanation: "1 KiB = 2^10 bytes; 1 MiB = 2^20 bytes (1,048,576 bytes)."
+            },
+            {
+                id: 6,
+                category: "calc",
+                topic: "Image Size Formula",
+                question: "According to Section 1.3.2, how is the uncompressed file size of a bitmap image calculated?",
+                options: [
+                    "image resolution (in pixels) × colour depth (in bits)",
+                    "image resolution (in pixels) ÷ colour depth (in bits)",
+                    "width (in inches) × height (in inches) × 8",
+                    "total pixels × sample rate (in Hz)"
+                ],
+                correct: 0,
+                explanation: "File size of an image = image resolution (in pixels) × colour depth (in bits)."
+            },
+            {
+                id: 7,
+                category: "calc",
+                topic: "Mono Sound Size Formula",
+                question: "How is the file size (in bits) of a mono sound recording calculated?",
+                options: [
+                    "sample rate (in Hz) × sample resolution (in bits) × duration (in seconds)",
+                    "sample rate (in kHz) × duration (in minutes) × 8",
+                    "sample resolution (in bits) × 2 × duration (in seconds)",
+                    "total samples ÷ 8 × 1024"
+                ],
+                correct: 0,
+                explanation: "Mono sound file size = sample rate (Hz) × sample resolution (bits) × duration (seconds)."
+            },
+            {
+                id: 8,
+                category: "calc",
+                topic: "Audio CD Song Calculation",
+                question: "A CD song lasts 3 minutes 30 seconds (210 seconds). It is sampled at 44.1 kHz (44,100 Hz), uses 16 bits per sample, and utilizes 2 channels (stereo). What is the uncompressed size of this song in bytes?",
+                options: [
+                    "37,044,000 bytes",
+                    "18,522,000 bytes",
+                    "296,352,000 bytes",
+                    "35,328,000 bytes"
+                ],
+                correct: 0,
+                explanation: "Bits = 44,100 × 16 × 210 × 2 = 296,352,000 bits. In bytes: 296,352,000 ÷ 8 = 37,044,000 bytes."
+            },
+            {
+                id: 9,
+                category: "calc",
+                topic: "CD Capacity Calculation",
+                question: "If a typical CD song requires approx. 37.044 MB (35.33 MiB), about how many such songs can be stored on a 740 MiB music CD?",
+                options: [
+                    "20 songs",
+                    "74 songs",
+                    "100 songs",
+                    "5 songs"
+                ],
+                correct: 0,
+                explanation: "740 MiB ÷ ~35.33 MiB per song ≈ 20 songs."
+            },
+            {
+                id: 10,
+                category: "calc",
+                topic: "Audio File Size Calculation",
+                question: "Calculate the file size in MiB for a 30-second mono audio recording sampled at 44,100 Hz with 16-bit resolution. (1 MiB = 1,048,576 bytes)",
+                options: [
+                    "2.52 MiB",
+                    "20.19 MiB",
+                    "1.26 MiB",
+                    "5.04 MiB"
+                ],
+                correct: 0,
+                explanation: "Bits = 44,100 × 16 × 30 = 21,168,000 bits. Bytes = 21,168,000 ÷ 8 = 2,646,000 bytes. MiB = 2,646,000 ÷ 1,048,576 ≈ 2.52 MiB."
+            },
+            {
+                id: 11,
+                category: "reasons",
+                topic: "Bandwidth Definition",
+                question: "What is 'bandwidth' in networking?",
+                options: [
+                    "The maximum rate of transfer of data across a network, measured in bits per second",
+                    "The physical thickness of network fiber optic cables",
+                    "The storage capacity of a web server's hard disk drive",
+                    "The frequency range of an analogue radio wave"
+                ],
+                correct: 0,
+                explanation: "Bandwidth is defined as the maximum rate of data transfer across a network, measured in bits per second (bps)."
+            },
+            {
+                id: 12,
+                category: "reasons",
+                topic: "Compression Benefits",
+                question: "Why does compressing a file result in faster data transfer rates across a network?",
+                options: [
+                    "Compressed files contain fewer bits, so they use less bandwidth and take less time to transfer",
+                    "Compression increases the network hardware transmission frequency",
+                    "Compression automatically upgrades the user's internet connection speed",
+                    "Compressed files skip security checks during network transmission"
+                ],
+                correct: 0,
+                explanation: "Fewer bits need to be sent across the network, reducing transmission time and bandwidth consumption."
+            },
+            {
+                id: 13,
+                category: "reasons",
+                topic: "Cost Reduction Rationale",
+                question: "How does reducing file size through compression save money for computer users?",
+                options: [
+                    "Cloud storage fees and ISP data charges are often based on stored or downloaded file size",
+                    "Compressed files eliminate the need to purchase antivirus software",
+                    "Compressing files reduces computer electricity usage by half",
+                    "ISPs provide free internet access for compressed MP3 files"
+                ],
+                correct: 0,
+                explanation: "Cloud providers charge by gigabytes stored, and ISPs often charge or cap users based on bandwidth consumption."
+            },
+            {
+                id: 14,
+                category: "reasons",
+                topic: "Compression Rationale",
+                question: "Which of the following is NOT a primary reason to compress data files?",
+                options: [
+                    "To increase the optical resolution of displayed monitor images",
+                    "To save storage space on hard disk drives (HDD) or solid state drives (SSD)",
+                    "To reduce the time taken to stream music or video files",
+                    "To decrease file upload and download times over a network"
+                ],
+                correct: 0,
+                explanation: "Compression reduces file size and data usage; it does not increase the physical resolution of display monitors."
+            },
+            {
+                id: 15,
+                category: "methods",
+                topic: "Lossy Compression Concept",
+                question: "What is the defining characteristic of Lossy file compression?",
+                options: [
+                    "The compression algorithm eliminates unnecessary data, meaning the original file CANNOT be reconstructed",
+                    "All original data is preserved so the exact original file can be fully restored",
+                    "It doubles file size to prevent data corruption during download",
+                    "It only works on plain text files"
+                ],
+                correct: 0,
+                explanation: "Lossy compression permanently discards data deemed unnecessary; the original file cannot be restored."
+            },
+            {
+                id: 16,
+                category: "methods",
+                topic: "Lossless Compression Concept",
+                question: "What is the defining characteristic of Lossless file compression?",
+                options: [
+                    "All data from the original uncompressed file can be completely reconstructed",
+                    "Unnecessary detail is permanently deleted to achieve maximum space savings",
+                    "It reduces file size by at least 90% for all file types",
+                    "It changes file extensions to JPEG or MP3 automatically"
+                ],
+                correct: 0,
+                explanation: "Lossless compression compresses data without losing any information, allowing 100% reconstruction of the original file."
+            },
+            {
+                id: 17,
+                category: "methods",
+                topic: "Lossy Sound Techniques",
+                question: "When applying a lossy compression algorithm to a sound file, which two factors may be reduced?",
+                options: [
+                    "Sampling rate and/or resolution (bit depth)",
+                    "Audio duration and channel names",
+                    "Speaker volume and bass frequencies",
+                    "File header size and system clock speed"
+                ],
+                correct: 0,
+                explanation: "Lossy sound compression reduces sampling rate and/or sample resolution (bit depth) to discard audio detail."
+            },
+            {
+                id: 18,
+                category: "methods",
+                topic: "Lossy Image Techniques",
+                question: "When applying a lossy compression algorithm to an image file, which two factors may be reduced?",
+                options: [
+                    "Image resolution and/or colour depth",
+                    "Monitor brightness and frame rate",
+                    "Image canvas boundaries and file creation date",
+                    "Pixel width and hardware RAM size"
+                ],
+                correct: 0,
+                explanation: "Lossy image algorithms shrink files by reducing image resolution and/or bit/colour depth."
+            },
+            {
+                id: 19,
+                category: "methods",
+                topic: "MP3 Reduction Ratio",
+                question: "By approximately how much can MP3 technology reduce the size of a normal music file?",
+                options: [
+                    "About 90%",
+                    "About 50%",
+                    "About 25%",
+                    "About 10%"
+                ],
+                correct: 0,
+                explanation: "MP3 compression reduces music file sizes by about 90% while maintaining satisfactory audio quality."
+            },
+            {
+                id: 20,
+                category: "methods",
+                topic: "JPEG Vision Principles",
+                question: "What key human vision trait is exploited by the JPEG compression algorithm?",
+                options: [
+                    "Human eyes are less sensitive to variations in color shades than to variations in brightness",
+                    "Human eyes cannot see images with more than 256 pixels",
+                    "Human eyes process red light faster than blue light",
+                    "Human eyes cannot distinguish between square and circular pixels"
+                ],
+                correct: 0,
+                explanation: "JPEG separates color from brightness because the human eye notices brightness changes much more than slight color variations."
+            },
+            {
+                id: 21,
+                category: "methods",
+                topic: "JPEG Block Processing",
+                question: "JPEG splits images into pixel blocks of what size to discard subtle color information?",
+                options: [
+                    "8 × 8 pixel blocks",
+                    "2 × 2 pixel blocks",
+                    "64 × 64 pixel blocks",
+                    "100 × 100 pixel blocks"
+                ],
+                correct: 0,
+                explanation: "JPEG separates color from brightness and divides the image into 8 × 8 pixel blocks to analyze and discard redundant color data."
+            },
+            {
+                id: 22,
+                category: "methods",
+                topic: "Lossless Application Cases",
+                question: "Why is Lossless compression essential when downloading a computer software application or complex spreadsheet?",
+                options: [
+                    "Any loss of data or modified code/numbers would corrupt the program or produce wrong calculations",
+                    "Lossless files download faster than lossy files",
+                    "Spreadsheets cannot be saved in binary format",
+                    "Lossy compression is blocked by firewalls"
+                ],
+                correct: 0,
+                explanation: "Executable programs and spreadsheets require bit-for-bit accuracy; discarding even a single bit corrupts code or data."
+            },
+            {
+                id: 23,
+                category: "methods",
+                topic: "RLE Definition",
+                question: "What is Run-Length Encoding (RLE)?",
+                options: [
+                    "A lossless file compression technique that reduces the size of a string of adjacent, identical data items",
+                    "A lossy image compression algorithm used exclusively in cameras",
+                    "A network protocol that speeds up video streaming rates",
+                    "A method for encrypting passwords using ASCII values"
+                ],
+                correct: 0,
+                explanation: "RLE is a form of lossless/reversible compression that replaces adjacent repeated data items with a count and a value code."
+            },
+            {
+                id: 24,
+                category: "methods",
+                topic: "RLE Encoded Structure",
+                question: "In standard RLE without flags, a repeating string is encoded into which two values?",
+                options: [
+                    "First value = number of identical items; Second value = code of the data item",
+                    "First value = code of the data item; Second value = duration in seconds",
+                    "First value = file size; Second value = ASCII total sum",
+                    "First value = pixel position; Second value = color depth"
+                ],
+                correct: 0,
+                explanation: "RLE encodes a run into: 1) the count of identical items, and 2) the code/value of the item."
+            },
+            {
+                id: 25,
+                category: "methods",
+                topic: "RLE Text Encoding Calculation",
+                question: "The text string 'aaaaabbbbccddddd' (16 bytes uncompressed) is encoded using RLE ASCII numbers (a=97, b=98, c=99, d=100). What is the resulting RLE byte stream?",
+                options: [
+                    "05 97 04 98 02 99 05 100 (8 bytes)",
+                    "05 a 04 b 02 c 05 d (8 bytes)",
+                    "97 05 98 04 99 02 100 05 (8 bytes)",
+                    "16 97 98 99 100 (5 bytes)"
+                ],
+                correct: 0,
+                explanation: "5 'a's (05 97), 4 'b's (04 98), 2 'c's (02 99), 5 'd's (05 100) = 8 bytes total."
+            },
+            {
+                id: 26,
+                category: "methods",
+                topic: "RLE Ineffectiveness",
+                question: "Why is standard RLE ineffective for a text string like 'cdcdcdcdcd'?",
+                options: [
+                    "There are no adjacent identical characters, so RLE creates count-value pairs for runs of 1, increasing file size",
+                    "ASCII cannot encode the characters 'c' and 'd'",
+                    "RLE only works on numbers, not text characters",
+                    "The string length is an even number"
+                ],
+                correct: 0,
+                explanation: "Without adjacent repeated characters, RLE writes a count of 1 for every character (e.g., 01 99 01 100...), doubling storage size."
+            },
+            {
+                id: 27,
+                category: "methods",
+                topic: "RLE Flag Rationale",
+                question: "What is the purpose of using a 'flag' byte (e.g., 255) in advanced RLE?",
+                options: [
+                    "It indicates that the following bytes represent a run of identical items, while unflagged bytes are taken at face value",
+                    "It signals the start of a lossy compression process",
+                    "It marks the end of an image file header",
+                    "It tells the CPU to convert binary data into hexadecimal"
+                ],
+                correct: 0,
+                explanation: "A flag byte precedes actual runs of identical items. Data without a flag is read as single, uncompressed characters."
+            },
+            {
+                id: 28,
+                category: "methods",
+                topic: "RLE Flag Code Analysis",
+                question: "Given the RLE flagged sequence: `255 08 97 99 100 255 08 101` (where 255 is the flag), what does `99 100` represent?",
+                options: [
+                    "Single instances of character 99 ('c') and character 100 ('d') taken at face value",
+                    "99 instances of character 100",
+                    "A run of 255 characters with code 99",
+                    "An error in the RLE compression stream"
+                ],
+                correct: 0,
+                explanation: "Because `99 100` is not preceded by the flag `255`, those bytes are read at face value as single characters ('c' and 'd')."
+            },
+            {
+                id: 29,
+                category: "methods",
+                topic: "RLE Image Encoding Calculation",
+                question: "An image row contains: 9 White pixels, 6 Black pixels, 2 White pixels. Using W=1 and B=0 in RLE pairs (count, code), what is the encoded output?",
+                options: [
+                    "91 60 21",
+                    "19 06 12",
+                    "9W 6B 2W",
+                    "9 6 2 1 0 1"
+                ],
+                correct: 0,
+                explanation: "9 White (91), 6 Black (60), 2 White (21) = 91 60 21."
+            },
+            {
+                id: 30,
+                category: "methods",
+                topic: "RLE Image Size Reduction",
+                question: "An 8 × 8 RGB image requires 8 × 8 × 3 = 192 bytes uncompressed. If RLE compresses its pixel runs into 92 byte values, what is the approximate percentage reduction in file size?",
+                options: [
+                    "About 52%",
+                    "About 90%",
+                    "About 10%",
+                    "About 75%"
+                ],
+                correct: 0,
+                explanation: "(192 - 92) ÷ 192 = 100 ÷ 192 ≈ 52.08% reduction."
+            },
+            {
+                id: 31,
+                category: "units",
+                topic: "Data Storage Order",
+                question: "Which of the following places data storage capacity units in correct ascending order?",
+                options: [
+                    "Bit < Byte < KiB < MiB < GiB < TiB",
+                    "Byte < Bit < MiB < KiB < TiB < GiB",
+                    "Nibble < Bit < Byte < GiB < MiB",
+                    "Bit < Nibble < Byte < MiB < KiB"
+                ],
+                correct: 0,
+                explanation: "Bit (1 bit) < Byte (8 bits) < KiB (2^10 bytes) < MiB (2^20 bytes) < GiB (2^30 bytes) < TiB (2^40 bytes)."
+            },
+            {
+                id: 32,
+                category: "methods",
+                topic: "File Format Classification",
+                question: "Which set of file formats consists EXCLUSIVELY of lossy compression algorithms?",
+                options: [
+                    "JPEG, MP3, MP4",
+                    "PNG, RLE, MP3",
+                    "BMP, GIF, JPEG",
+                    "FLAC, TIFF, MP4"
+                ],
+                correct: 0,
+                explanation: "JPEG (images), MP3 (audio), and MP4 (video) are all lossy compression formats."
+            },
+            {
+                id: 33,
+                category: "methods",
+                topic: "MP4 Uses",
+                question: "What is the primary usage of the MP4 compression format?",
+                options: [
+                    "Playing multimedia files (video, audio, and subtitles) on computers and mobile devices",
+                    "Storing raw high-resolution photography on cameras",
+                    "Compressing text documents for email attachments",
+                    "Executing software installation packages"
+                ],
+                correct: 0,
+                explanation: "MP4 is a lossy multimedia container format used for video, audio, and streaming media."
+            },
+            {
+                id: 34,
+                category: "calc",
+                topic: "Photo Storage Count",
+                question: "A solid state drive has 400 photos, each 10 KiB in size. What is the total storage occupied by this folder in KiB and MiB?",
+                options: [
+                    "4,000 KiB (approx. 3.91 MiB)",
+                    "400 KiB (approx. 0.4 MiB)",
+                    "40,000 KiB (approx. 39.06 MiB)",
+                    "400,000 KiB (approx. 390 MiB)"
+                ],
+                correct: 0,
+                explanation: "400 × 10 KiB = 4,000 KiB. In MiB: 4,000 ÷ 1,024 ≈ 3.91 MiB."
+            },
+            {
+                id: 35,
+                category: "calc",
+                topic: "Memory Stick Photo Calculation",
+                question: "How many photographs of size 10 KiB could be stored on a 64 GiB memory stick? (Assume 1 GiB = 1,048,576 KiB)",
+                options: [
+                    "6,710,886 photographs",
+                    "640,000 photographs",
+                    "6,400,000 photographs",
+                    "67,108,864 photographs"
+                ],
+                correct: 0,
+                explanation: "64 GiB = 64 × 1,048,576 KiB = 67,108,864 KiB. Dividing by 10 KiB per photo = 6,710,886 photos."
+            },
+            {
+                id: 36,
+                category: "reasons",
+                topic: "Advantages of Size Reduction",
+                question: "Which of the following gives TWO valid advantages of reducing photo file sizes on a storage device?",
+                options: [
+                    "More photos can be stored on the device, and transfer/email upload times are reduced",
+                    "Photo visual resolution increases, and cloud storage cost increases",
+                    "Colors become more vivid, and battery usage decreases",
+                    "Files become read-only, and hard disk defragmentation is eliminated"
+                ],
+                correct: 0,
+                explanation: "Smaller file sizes save storage space (allowing more files to fit) and speed up network/email transfers."
+            },
+            {
+                id: 37,
+                category: "methods",
+                topic: "RLE Text Case Study",
+                question: "Consider the string 'aaaaaaaa' (8 'a's, ASCII 97). In non-flagged RLE (count, value), how is this encoded in bytes?",
+                options: [
+                    "08 97 (2 bytes)",
+                    "97 08 (2 bytes)",
+                    "8a (2 bytes)",
+                    "255 08 97 (3 bytes)"
+                ],
+                correct: 0,
+                explanation: "Count = 8 (08 in byte), ASCII code = 97. Encoded byte pair: 08 97."
+            },
+            {
+                id: 38,
+                category: "reasons",
+                topic: "Streaming Rationale",
+                question: "Why is data compression vital for streaming live video over the internet?",
+                options: [
+                    "Uncompressed video bandwidth requirements exceed standard internet connection speeds, causing buffering",
+                    "Streaming servers can only process files formatted in JPEG",
+                    "Compression removes video audio channels to save memory",
+                    "Video player software cannot read uncompressed frames"
+                ],
+                correct: 0,
+                explanation: "Uncompressed video streams require massive bandwidth. Compression lowers bitrates so streams play smoothly without buffering."
+            },
+            {
+                id: 39,
+                category: "methods",
+                topic: "Original Reconstruction",
+                question: "Why CANNOT an uncompressed raw photograph be reconstructed after being saved as a JPEG?",
+                options: [
+                    "The JPEG algorithm permanently discarded subtle color variations and pixel detail during compression",
+                    "JPEG files encrypt original pixel bytes with a password key",
+                    "The operating system deletes the original file header from RAM",
+                    "Digital cameras erase sensor memory after JPEG conversion"
+                ],
+                correct: 0,
+                explanation: "Lossy JPEG algorithms permanently delete redundant color data; discarded bits cannot be recovered."
+            },
+            {
+                id: 40,
+                category: "calc",
+                topic: "Image Resolution Effect",
+                question: "What happens to the calculated file size of an uncompressed bitmap image if its resolution (width × height) is doubled in both dimensions?",
+                options: [
+                    "The file size becomes 4 times larger (quadruples)",
+                    "The file size doubles (2 times larger)",
+                    "The file size remains unchanged",
+                    "The file size increases by 8 times"
+                ],
+                correct: 0,
+                explanation: "Resolution is Width × Height. Doubling both dimensions yields (2W) × (2H) = 4 × (W × H), quadrupling total pixels and file size."
+            },
+            {
+                id: 41,
+                category: "calc",
+                topic: "Sampling Rate Effect",
+                question: "What is the effect of doubling the sound sampling rate on an uncompressed audio recording's file size?",
+                options: [
+                    "The file size doubles",
+                    "The file size quadruples",
+                    "The file size is cut in half",
+                    "The file size increases by 10%"
+                ],
+                correct: 0,
+                explanation: "File size is directly proportional to sample rate. Doubling the samples per second doubles the total bits generated."
+            },
+            {
+                id: 42,
+                category: "methods",
+                topic: "RLE Effective Condition",
+                question: "Under what specific condition is Run-Length Encoding (RLE) MOST effective at reducing file size?",
+                options: [
+                    "When the file contains long continuous runs of adjacent, identical data items",
+                    "When data values change continuously with every adjacent byte",
+                    "When applied to 24-bit photographic scenery images",
+                    "When compressing high-frequency audio recordings"
+                ],
+                correct: 0,
+                explanation: "RLE relies on long repeating sequences of identical data (e.g., solid color backgrounds) to achieve high compression ratios."
+            },
+            {
+                id: 43,
+                category: "units",
+                topic: "Nibble Conversions",
+                question: "How many nibbles are contained within a 32-bit binary number?",
+                options: [
+                    "8 nibbles",
+                    "4 nibbles",
+                    "16 nibbles",
+                    "2 nibbles"
+                ],
+                correct: 0,
+                explanation: "1 nibble = 4 bits. 32 bits ÷ 4 = 8 nibbles."
+            },
+            {
+                id: 44,
+                category: "methods",
+                topic: "Lossless Examples",
+                question: "Which of the following is an example of a LOSSLESS compression technique or format?",
+                options: [
+                    "Run-Length Encoding (RLE)",
+                    "JPEG image format",
+                    "MP3 audio format",
+                    "MP4 video format"
+                ],
+                correct: 0,
+                explanation: "RLE is a lossless compression technique. JPEG, MP3, and MP4 are lossy formats."
+            },
+            {
+                id: 45,
+                category: "units",
+                topic: "Kibibyte vs Kilobyte",
+                question: "What is the difference between 1 Kilobyte (KB) in the denary system and 1 Kibibyte (KiB) in the IEC binary system?",
+                options: [
+                    "1 KB = 1,000 bytes (10^3), while 1 KiB = 1,024 bytes (2^10)",
+                    "1 KB = 1,024 bytes, while 1 KiB = 1,000 bytes",
+                    "1 KB = 8 bits, while 1 KiB = 10 bits",
+                    "1 KB is used for RAM, while 1 KiB is used for hard drives"
+                ],
+                correct: 0,
+                explanation: "Denary prefixes use powers of 10 (1 KB = 10^3 = 1,000 bytes). IEC binary prefixes use powers of 2 (1 KiB = 2^10 = 1,024 bytes)."
+            },
+            {
+                id: 46,
+                category: "methods",
+                topic: "JPEG Information Loss",
+                question: "What specific information is discarded by JPEG compression when splitting an image into 8 × 8 pixel blocks?",
+                options: [
+                    "High-frequency color variations that the human eye cannot easily perceive",
+                    "The primary red channel pixels entirely",
+                    "The image aspect ratio metadata",
+                    "All dark pixels below 10% brightness"
+                ],
+                correct: 0,
+                explanation: "JPEG discards fine color variations within 8 × 8 blocks because human eyes notice brightness changes far more than subtle color shifts."
+            },
+            {
+                id: 47,
+                category: "calc",
+                topic: "Uncompressed Image Calculation",
+                question: "Calculate the size in bytes of an uncompressed image with a resolution of 1024 × 768 pixels and a colour depth of 24 bits.",
+                options: [
+                    "2,359,296 bytes (approx. 2.36 MB)",
+                    "18,874,368 bytes",
+                    "786,432 bytes",
+                    "2,097,152 bytes"
+                ],
+                correct: 0,
+                explanation: "Bits = 1024 × 768 × 24 = 18,874,368 bits. Bytes = 18,874,368 ÷ 8 = 2,359,296 bytes."
+            },
+            {
+                id: 48,
+                category: "reasons",
+                topic: "Cloud Storage Impact",
+                question: "How does file compression reduce cloud storage operational costs for a business?",
+                options: [
+                    "Cloud providers charge fees based on the total volume of data stored; smaller files directly lower monthly storage charges",
+                    "Compressed files automatically encrypt database tables",
+                    "Compressed files prevent server hardware overheating",
+                    "Cloud storage servers reject uncompressed bitmap uploads"
+                ],
+                correct: 0,
+                explanation: "As noted in Section 1.3.3, cloud storage cost is directly tied to file size, so compression reduces subscription fees."
+            },
+            {
+                id: 49,
+                category: "methods",
+                topic: "RLE Flag Byte Count",
+                question: "In an RLE system using a flag byte `255`, how many bytes are required to store the compressed run: `255 10 65`?",
+                options: [
+                    "3 bytes (representing 10 instances of character ASCII 65)",
+                    "10 bytes",
+                    "255 bytes",
+                    "65 bytes"
+                ],
+                correct: 0,
+                explanation: "The stream contains 3 byte values: `255` (flag), `10` (count), `65` (ASCII value) = 3 bytes total."
+            },
+            {
+                id: 50,
+                category: "calc",
+                topic: "Audio File Size Reduction",
+                question: "A mono audio file is 10 MiB. If its sampling rate is reduced by 50% and its sample resolution is halved (from 16-bit to 8-bit), what is the new file size?",
+                options: [
+                    "2.5 MiB",
+                    "5.0 MiB",
+                    "1.25 MiB",
+                    "7.5 MiB"
+                ],
+                correct: 0,
+                explanation: "Reducing sample rate by half multiplies size by 0.5. Halving resolution multiplies size by 0.5. New size = 10 MiB × 0.5 × 0.5 = 2.5 MiB."
+            }
+        ];
+
+        // State variables
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = {};
+        let bookmarked = {};
+        let quizMode = 'practice';
+        let timerInterval = null;
+        let timeRemaining = 45 * 60; // 45 mins in seconds
+
+        // DOM elements
+        const setupScreen = document.getElementById('setupScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const themeToggle = document.getElementById('themeToggle');
+        
+        const modeSelect = document.getElementById('modeSelect');
+        const topicSelect = document.getElementById('topicSelect');
+        const shuffleAnswersToggle = document.getElementById('shuffleAnswersToggle');
+        const startBtn = document.getElementById('startBtn');
+
+        const qCurrent = document.getElementById('qCurrent');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const questionCategory = document.getElementById('questionCategory');
+        const bookmarkBtn = document.getElementById('bookmarkBtn');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const explanationBox = document.getElementById('explanationBox');
+        const explanationText = document.getElementById('explanationText');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const gridNav = document.getElementById('gridNav');
+
+        // Theme Toggle Logic
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+        });
+
+        // Initialize / Filter Questions
+        startBtn.addEventListener('click', () => {
+            quizMode = modeSelect.value;
+            const selectedTopic = topicSelect.value;
+            
+            if (selectedTopic === 'all') {
+                currentQuestions = JSON.parse(JSON.stringify(questionsData));
+            } else {
+                currentQuestions = JSON.parse(JSON.stringify(questionsData.filter(q => q.category === selectedTopic)));
+            }
+
+            // Prepare choices
+            currentQuestions.forEach(q => {
+                let optionsObj = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+                if (shuffleAnswersToggle.checked) {
+                    for (let i = optionsObj.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [optionsObj[i], optionsObj[j]] = [optionsObj[j], optionsObj[i]];
+                    }
+                }
+                q.shuffledOptions = optionsObj;
+            });
+
+            currentIndex = 0;
+            userAnswers = {};
+            bookmarked = {};
+
+            setupScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
+            if (quizMode === 'exam') {
+                document.getElementById('timerBox').classList.remove('hidden');
+                timeRemaining = 45 * 60;
+                startTimer();
+                submitBtn.classList.remove('hidden');
+            } else {
+                document.getElementById('timerBox').classList.add('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            renderGridNav();
+            renderQuestion();
+        });
+
+        function renderGridNav() {
+            gridNav.innerHTML = '';
+            currentQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'grid-nav-btn';
+                btn.innerText = idx + 1;
+                
+                if (userAnswers[idx] !== undefined) btn.classList.add('answered');
+                if (bookmarked[idx]) btn.classList.add('bookmarked');
+                
+                btn.addEventListener('click', () => {
+                    currentIndex = idx;
+                    renderQuestion();
+                });
+                gridNav.appendChild(btn);
+            });
+        }
+
+        function renderQuestion() {
+            const q = currentQuestions[currentIndex];
+            qCurrent.innerText = `${currentIndex + 1} / ${currentQuestions.length}`;
+            questionCategory.innerText = q.topic.toUpperCase();
+            questionText.innerText = `${currentIndex + 1}. ${q.question}`;
+            
+            progressBar.style.width = `${((currentIndex + 1) / currentQuestions.length) * 100}%`;
+
+            bookmarkBtn.innerText = bookmarked[currentIndex] ? "🔖 Bookmarked" : "🔖 Bookmark";
+            bookmarkBtn.style.color = bookmarked[currentIndex] ? "var(--accent)" : "inherit";
+
+            optionsContainer.innerHTML = '';
+            explanationBox.style.display = 'none';
+
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            q.shuffledOptions.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                
+                const prefix = document.createElement('span');
+                prefix.className = 'option-prefix';
+                prefix.innerText = `${letters[idx]}.`;
+                
+                const text = document.createElement('span');
+                text.innerText = opt.text;
+
+                btn.appendChild(prefix);
+                btn.appendChild(text);
+
+                // Option State in Practice Mode
+                if (quizMode === 'practice' && userAnswers[currentIndex] !== undefined) {
+                    if (opt.originalIndex === q.correct) {
+                        btn.classList.add('correct');
+                    }
+                    if (userAnswers[currentIndex] === idx && opt.originalIndex !== q.correct) {
+                        btn.classList.add('incorrect');
+                    }
+                } else if (userAnswers[currentIndex] === idx) {
+                    btn.classList.add('selected');
+                }
+
+                btn.addEventListener('click', () => selectAnswer(idx));
+                optionsContainer.appendChild(btn);
+            });
+
+            if (quizMode === 'practice' && userAnswers[currentIndex] !== undefined) {
+                explanationText.innerText = q.explanation;
+                explanationBox.style.display = 'block';
+            }
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.innerText = currentIndex === currentQuestions.length - 1 ? "Finish" : "Next";
+            updateScoreDisplay();
+        }
+
+        function selectAnswer(optionIndex) {
+            userAnswers[currentIndex] = optionIndex;
+            renderGridNav();
+            renderQuestion();
+        }
+
+        bookmarkBtn.addEventListener('click', () => {
+            bookmarked[currentIndex] = !bookmarked[currentIndex];
+            renderGridNav();
+            renderQuestion();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (confirm("Are you sure you want to submit your exam?")) {
+                finishQuiz();
+            }
+        });
+
+        function updateScoreDisplay() {
+            let correctCount = 0;
+            Object.keys(userAnswers).forEach(idx => {
+                const q = currentQuestions[idx];
+                const selectedOptIndex = userAnswers[idx];
+                if (selectedOptIndex !== undefined) {
+                    const origIndex = q.shuffledOptions[selectedOptIndex].originalIndex;
+                    if (origIndex === q.correct) correctCount++;
+                }
+            });
+            scoreDisplay.innerText = correctCount;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const mins = Math.floor(timeRemaining / 60);
+                const secs = timeRemaining % 60;
+                timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! Submitting your exam.");
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            let score = 0;
+            currentQuestions.forEach((q, idx) => {
+                const selectedOptIndex = userAnswers[idx];
+                if (selectedOptIndex !== undefined) {
+                    if (q.shuffledOptions[selectedOptIndex].originalIndex === q.correct) {
+                        score++;
+                    }
+                }
+            });
+
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            document.getElementById('finalScore').innerText = `${score} / ${currentQuestions.length}`;
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            document.getElementById('percentageDisplay').innerText = `${percentage}% Score`;
+        }
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            resultScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
